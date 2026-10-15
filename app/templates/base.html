@@ -1,93 +1,825 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}{% endblock %}</title>
+  <title>{% block title %}Multimarcas{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
+    /* ============================================================
+       DESIGN SYSTEM
+       ============================================================ */
+    :root {
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+
+      --accent: #ff7a00;
+      --accent-dark: #e56a00;
+      --accent-soft: #fff4e8;
+
+      --dark: #0f172a;
+      --dark-2: #1e293b;
+
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+
+      --radius: 14px;
+      --radius-sm: 10px;
+
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06), 0 1px 3px rgba(15, 23, 42, .08);
+      --shadow-md: 0 12px 30px rgba(15, 23, 42, .10);
+      --shadow-lg: 0 22px 50px rgba(15, 23, 42, .16);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-        font-family: 'Open Sans', sans-serif;
-        background-color: #f7f7f7;
-        color: #333;
-        margin: 0;
-        padding: 0;
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    header {
-        background-color: #0096c7;
-        color: #fff;
-        text-align: center;
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
     }
 
-    footer {
-        background-color: #ccc;
-        color: #333;
-        padding: 20px;
-        text-align: center;
+    a { color: inherit; }
+
+    /* ------------------------------------------------------------
+       TOPO / NAVEGAÇÃO
+       ------------------------------------------------------------ */
+    .topbar {
+      background: var(--dark);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
 
-    nav {
-        background-color: #0096c7;
-        color: #fff;
-        height: 50px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .topbar__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
-    nav ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      color: #fff;
+      padding: 12px 0;
     }
 
-    nav ul li {
-        margin: 0 10px;
+    .brand__mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      font-size: 17px;
     }
 
-    nav ul li a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 16px;
-        padding: 15px;
-        transition: all 0.3s ease;
+    .brand__text small {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: #94a3b8;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
-    nav ul li a:hover {
-        background-color: #32bbe8;
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
-    nav ul li.active a {
-        background-color: #666;
+    .menu a {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      color: #cbd5e1;
+      transition: background .18s ease, color .18s ease;
     }
 
-    nav ul li.active a:hover {
-        background-color: #999;
+    .menu a:hover {
+      background: rgba(255, 255, 255, .10);
+      color: #fff;
     }
 
+    .menu a.is-accent {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .menu a.is-accent:hover { background: var(--accent-dark); }
+
+    .menu a.is-ghost {
+      border: 1px solid rgba(255, 255, 255, .22);
+      color: #fff;
+    }
+
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px 6px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    .user-chip__avatar {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    /* ------------------------------------------------------------
+       TÍTULOS DE PÁGINA
+       ------------------------------------------------------------ */
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .page-head h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .page-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* ------------------------------------------------------------
+       CARTÕES
+       ------------------------------------------------------------ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card--padded { padding: 24px; }
+
+    /* ------------------------------------------------------------
+       BOTÕES
+       ------------------------------------------------------------ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .18s ease, transform .12s ease, box-shadow .18s ease;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(255, 122, 0, .28);
+    }
+
+    .btn-primary:hover { background: var(--accent-dark); }
+
+    .btn-secondary {
+      background: #fff;
+      border-color: var(--border);
+      color: var(--ink);
+    }
+
+    .btn-secondary:hover { background: #f1f5f9; }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover { background: var(--danger-dark); }
+
+    .btn-block { width: 100%; }
+
+    /* ------------------------------------------------------------
+       FORMULÁRIOS
+       ------------------------------------------------------------ */
+    .form-card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 28px;
+    }
+
+    .form-card--narrow { max-width: 440px; }
+
+    .form-card__title {
+      margin: 0 0 4px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .form-card__subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    .field label,
+    .form-card label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .field input,
+    .field select,
+    .field textarea,
+    .form-card input:not([type="submit"]):not([type="checkbox"]),
+    .form-card select,
+    .form-card textarea {
+      width: 100%;
+      padding: 11px 14px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus,
+    .form-card input:focus,
+    .form-card select:focus,
+    .form-card textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 122, 0, .15);
+    }
+
+    .field textarea { min-height: 110px; resize: vertical; }
+
+    .field input[type="file"] {
+      padding: 10px;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+
+    .field .helptext,
+    .helptext {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .helptext ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+    }
+
+    .helptext li { margin-bottom: 2px; }
+
+    .field .errorlist,
+    .errorlist {
+      margin: 0 0 6px;
+      padding: 0;
+      list-style: none;
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .form-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ------------------------------------------------------------
+       AVISOS
+       ------------------------------------------------------------ */
+    .alert {
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      border: 1px solid;
+    }
+
+    .alert--error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .alert--info {
+      background: var(--accent-soft);
+      border-color: #ffd9b3;
+      color: #9a4d00;
+    }
+
+    /* ------------------------------------------------------------
+       ETIQUETAS
+       ------------------------------------------------------------ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .badge--accent {
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+    }
+
+    /* ------------------------------------------------------------
+       ESTADO VAZIO
+       ------------------------------------------------------------ */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 56px 20px;
+      background: var(--surface);
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
+      color: var(--muted);
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 17px;
+    }
+
+    /* ------------------------------------------------------------
+       RODAPÉ
+       ------------------------------------------------------------ */
+    .footer {
+      background: var(--dark);
+      color: #94a3b8;
+      font-size: 13px;
+      text-align: center;
+      padding: 22px 20px;
+    }
+
+    .footer strong { color: #fff; }
+
+    @media (max-width: 640px) {
+      main { padding: 22px 16px 44px; }
+      .page-head h1 { font-size: 23px; }
+      .form-card { padding: 22px 18px; }
+      .topbar__inner { min-height: auto; padding-bottom: 10px; }
+    }
+
+    /* ------------------------------------------------------------
+       BUSCA
+       ------------------------------------------------------------ */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .search-bar input {
+      flex: 1 1 260px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 122, 0, .15);
+    }
+
+    /* ------------------------------------------------------------
+       GRADE DE CARROS
+       ------------------------------------------------------------ */
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .car-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow-sm);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .car-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .car-card__media {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: linear-gradient(135deg, #eef2f7, #e2e8f0);
+      overflow: hidden;
+    }
+
+    .car-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .35s ease;
+    }
+
+    .car-card:hover .car-card__media img { transform: scale(1.05); }
+
+    .car-card__placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 100%;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .car-card__placeholder span:first-child { font-size: 34px; }
+
+    .car-card__price {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, .88);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+    }
+
+    .car-card__body {
+      padding: 16px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .car-card__brand {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+    }
+
+    .car-card__body h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .car-card__meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    /* ------------------------------------------------------------
+       DETALHE DO CARRO
+       ------------------------------------------------------------ */
+    .detail {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 26px;
+      align-items: start;
+    }
+
+    .detail__media {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #eef2f7, #e2e8f0);
+      aspect-ratio: 4 / 3;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .detail__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail__placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 100%;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .detail__placeholder span:first-child { font-size: 46px; }
+
+    .detail__panel { padding: 26px; }
+
+    .detail__brand {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+    }
+
+    .detail__panel h1 {
+      margin: 6px 0 4px;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .detail__price {
+      margin: 0 0 20px;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    .specs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .spec {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+
+    .spec label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .spec span {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .detail__bio {
+      margin: 0 0 22px;
+      padding: 16px;
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: #7c3d00;
+      font-size: 14px;
+    }
+
+    .detail__bio strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ------------------------------------------------------------
+       AUTENTICAÇÃO
+       ------------------------------------------------------------ */
+    .auth {
+      max-width: 420px;
+      margin: 24px auto 0;
+    }
+
+    .auth__brand {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .auth__brand span:first-child {
+      display: inline-grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .auth__brand h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .auth__brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .auth__footer {
+      margin: 18px 0 0;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .auth__footer a {
+      color: var(--accent-dark);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .auth__footer a:hover { text-decoration: underline; }
+
+    /* ------------------------------------------------------------
+       CONFIRMAÇÃO (excluir)
+       ------------------------------------------------------------ */
+    .confirm {
+      max-width: 520px;
+      margin: 24px auto 0;
+      text-align: center;
+      padding: 32px 26px;
+    }
+
+    .confirm__icon {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #fef2f2;
+      font-size: 28px;
+    }
+
+    .confirm h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .confirm p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .confirm .form-actions {
+      justify-content: center;
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    @media (max-width: 860px) {
+      .detail { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
-        {% if user.is_authenticated %}
-          <li>Olá, {{ user.username }}</li>
-          <li><a href="{% url 'new_car' %}">Cadastrar Carro</a></li>
-        {% endif %}
-        {% if not user.is_authenticated %}
-          <li><a href="{% url 'register' %}">Cadastrar-se</a></li>
-          <li><a href="{% url 'login' %}">Login</a></li>
-        {% endif %}
 
+  <header class="topbar">
+    <div class="topbar__inner">
+
+      <a href="{% url 'cars_list' %}" class="brand">
+        <span class="brand__mark">🚗</span>
+        <span class="brand__text">
+          Multimarcas
+          <small>Estoque de veículos</small>
+        </span>
+      </a>
+
+      <ul class="menu">
         <li><a href="{% url 'cars_list' %}">Carros</a></li>
 
         {% if user.is_authenticated %}
-          <li><a href="{% url 'logout' %}">Sair</a></li>
+          <li><a href="{% url 'new_car' %}" class="is-accent">+ Cadastrar carro</a></li>
+          <li>
+            <span class="user-chip">
+              <span class="user-chip__avatar">{{ user.username|slice:":1" }}</span>
+              {{ user.username }}
+            </span>
+          </li>
+          <li><a href="{% url 'logout' %}" class="is-ghost">Sair</a></li>
+        {% else %}
+          <li><a href="{% url 'register' %}" class="is-ghost">Cadastrar-se</a></li>
+          <li><a href="{% url 'login' %}" class="is-accent">Entrar</a></li>
         {% endif %}
       </ul>
-    </nav>
+
+    </div>
   </header>
 
   <main>
@@ -95,8 +827,12 @@
     {% endblock %}
   </main>
 
-  <footer>
-    <p>&copy; 2023 PycodeBR Multimarcas</p>
+  <footer class="footer">
+    <p style="margin:0;">
+      <strong>PycodeBR Multimarcas</strong> — projeto de estudo em Django
+      &copy; {% now "Y" %}
+    </p>
   </footer>
+
 </body>
 </html>

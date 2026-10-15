@@ -1,32 +1,50 @@
 {% extends "base.html" %}
 
+{% block title %}Criar conta · Multimarcas{% endblock %}
+
 {% block content %}
-  
-  <form method="post">
 
-    {% csrf_token %}
+<div class="auth">
 
-    <div class="form-group">
-        {{ user_form.username.errors }} <!-- mostrando os erros do campo username -->
-        <label>Usuário</label>
-        {{ user_form.username }}
-    </div>
+  <div class="auth__brand">
+    <span>🚗</span>
+    <h1>Criar conta</h1>
+    <p>Cadastre-se para anunciar e gerenciar veículos</p>
+  </div>
 
-    <div class="form-group">
-        {{ user_form.password1.errors }} <!-- mostrando os erros do campo password1 -->
-        <label>Senha</label>
-        {{ user_form.password1 }}
-    </div>
+  <div class="form-card form-card--narrow">
 
-    <div class="form-group">
-        {{ user_form.password2.errors }} <!-- mostrando os erros do campo password2 -->
-        <label>Confirmação de Senha</label>
-        {{ user_form.password2 }}
-    </div>
+    <form method="post">
+      {% csrf_token %}
 
-    <div class="form-group">
-        <input type="submit" value="Cadastrar">
-    </div>
+      {% if user_form.non_field_errors %}
+        <div class="alert alert--error">
+          {% for error in user_form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+        </div>
+      {% endif %}
 
-  </form>
+      {% for field in user_form %}
+        <div class="field">
+          {{ field.errors }}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <span class="helptext">{{ field.help_text }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-block">Criar conta</button>
+      </div>
+    </form>
+
+    <p class="auth__footer">
+      Já tem conta? <a href="{% url 'login' %}">Entrar</a>
+    </p>
+
+  </div>
+
+</div>
+
 {% endblock %}

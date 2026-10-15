@@ -1,14 +1,42 @@
 {% extends "base.html" %}
 
+{% block title %}Cadastrar carro · Multimarcas{% endblock %}
+
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
 
-        <table>
-            {{ form.as_table }}
-        </table>
-        
-        <input type="submit" value="Cadastrar" class="btn btn-primary">
+<div class="page-head">
+  <div>
+    <h1>Cadastrar carro</h1>
+    <p>Preencha os dados do veículo — a descrição técnica é gerada automaticamente por IA</p>
+  </div>
+</div>
 
-    </form>
+<div class="form-card">
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert--error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for field in form %}
+      <div class="field">
+        {{ field.errors }}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <span class="helptext">{{ field.help_text }}</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Cadastrar carro</button>
+      <a href="{% url 'cars_list' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+
+</div>
+
 {% endblock %}

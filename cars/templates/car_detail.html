@@ -1,103 +1,71 @@
 {% extends "base.html" %}
 
+{% block title %}{{ object.brand }} {{ object.model }} · Multimarcas{% endblock %}
+
 {% block content %}
-  <style>
-    .car-card {
-      background-color: #e3e1e1;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-      overflow: hidden;
-      text-align: center;
-      transition: all 0.3s ease;
-      max-width: 500px;
-      margin: 20px auto 0;
-      margin-bottom: 20px;
-    }
 
-    .car-card:hover {
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      transform: translateY(-2px);
-    }
+<div class="page-head">
+  <div>
+    <h1>Detalhes do veículo</h1>
+    <p>Informações completas do carro selecionado</p>
+  </div>
+  <a href="{% url 'cars_list' %}" class="btn btn-secondary">← Voltar para o estoque</a>
+</div>
 
-    .car-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
+<div class="detail">
 
-    .car-card h2 {
-      font-size: 1.5rem;
-      margin: 10px;
-    }
-
-    .car-card p {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-
-    .buttons-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-
-    .btn {
-      display: inline-block;
-      background-color: #0096c7;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease-in-out;
-      margin: 0 10px;
-    }
-
-    .btn:hover {
-      background-color: #108eb8;
-    }
-
-    .btn-danger {
-      background-color: #d9534f;
-      text-decoration: none !important;
-    }
-
-    .btn-danger:hover {
-      background-color: #d2221c;
-    }
-
-    .error-message {
-      color: #d9534f;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    a {
-      text-decoration: none !important;
-    }
-  </style>
-  <div class="car-card">
+  <div class="detail__media">
     {% if object.photo %}
       <img src="{{ object.photo.url }}" alt="{{ object.model }} - {{ object.brand }}">
     {% else %}
-      <p class="no-photo">Foto não disponível</p>
+      <div class="detail__placeholder">
+        <span>🚗</span>
+        <span>Foto não disponível</span>
+      </div>
     {% endif %}
-    <h2>{{ object.brand }} {{ object.model }}</h2>
-    <p><strong>Ano de fabricação:</strong> {{ object.factory_year }}</p>
-    <p><strong>Ano do modelo:</strong> {{ object.model_year }}</p>
-    <p><strong>Placa:</strong> {{ object.plate }}</p>
-      <p><strong>Preço:</strong> R$ {{ object.value }}</p>
-      {% if object.bio %}
-        <p><strong>Bio:</strong> {{ object.bio }}</p>
-      {% endif %}
   </div>
-  {% if user.is_authenticated %}
-    <div class="buttons-container">
+
+  <div class="card detail__panel">
+
+    <span class="detail__brand">{{ object.brand }}</span>
+    <h1>{{ object.model }}</h1>
+    <p class="detail__price">R$ {{ object.value }}</p>
+
+    <div class="specs">
+      <div class="spec">
+        <label>Ano de fabricação</label>
+        <span>{{ object.factory_year|default:"—" }}</span>
+      </div>
+      <div class="spec">
+        <label>Ano do modelo</label>
+        <span>{{ object.model_year|default:"—" }}</span>
+      </div>
+      <div class="spec">
+        <label>Placa</label>
+        <span>{{ object.plate|default:"—" }}</span>
+      </div>
+      <div class="spec">
+        <label>Marca</label>
+        <span>{{ object.brand }}</span>
+      </div>
+    </div>
+
+    {% if object.bio %}
+    <div class="detail__bio">
+      <strong>Descrição</strong>
+      {{ object.bio }}
+    </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <div class="form-actions">
       <a href="{% url 'car_update' pk=object.pk %}" class="btn btn-primary">Editar</a>
       <a href="{% url 'car_delete' pk=object.pk %}" class="btn btn-danger">Deletar</a>
     </div>
-  {% endif %}
+    {% endif %}
+
+  </div>
+
+</div>
+
 {% endblock %}
