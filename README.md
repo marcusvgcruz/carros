@@ -1,46 +1,95 @@
-# 🚗 Carros — Sistema de Gerenciamento e Inventário de Veículos
+# 🚗 Carros — Inventário de Veículos com IA
 
-Sistema web completo desenvolvido em **Python** e **Django** para cadastro, controle de inventário e gerenciamento de veículos, marcas e usuários. O projeto conta com rotinas de automação via *Django Signals* e integração inteligente com a API da **OpenAI** para geração de descrições detalhadas dos carros cadastrados.
+![Django](https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini%20API-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
----
-
-## 📌 Funcionalidades
-
-- **Autenticação & Contas (`accounts`):**
-  - Cadastro de novos usuários (`register`).
-  - Login e autenticação segura com redirecionamento de permissões (`login`).
-- **Gerenciamento de Veículos (`cars`):**
-  - Listagem com busca, paginação e visualização em cards/galeria.
-  - Cadastro de novos veículos com upload de fotos (`media/cars/`).
-  - Atualização e exclusão de carros cadastrados (operações CRUD completas).
-  - Associação com marcas (`Brand`), placa e ano de fabricação/modelo.
-- **Inventário Automático (`CarInventory` + Signals):**
-  - Rastreamento e cálculo em tempo real do total de veículos no estoque e valor patrimonial acumulado a cada cadastro ou exclusão via *Django Signals*.
-- **Inteligência Artificial Integrada (`openai_api`):**
-  - Geração automática da biografia/descrição técnica (`bio`) do veículo consumindo modelos da OpenAI.
+Plataforma web para cadastro e controle de inventário de veículos. Duas coisas
+acontecem **sozinhas**: a descrição de venda do carro é gerada por **IA** no
+momento do cadastro e o **inventário se atualiza a cada movimentação** — as duas
+automações usam **Django Signals**, sem botão e sem rotina agendada.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## ✨ Destaques
 
-- **Linguagem:** Python 3.12+
-- **Framework Web:** [Django 6](https://www.djangoproject.com/)
-- **Banco de Dados:** SQLite (padrão de desenvolvimento)
-- **Processamento de Imagens:** Pillow (PIL)
-- **Integração de IA:** Gemini API
-- **Arquitetura:** MVT (Model-View-Template) com formulários e Class-Based Views
+**1. Descrição técnica gerada por IA no momento do save.**
+Antes de gravar o carro, um `pre_save` verifica se o campo `bio` está vazio e, se
+estiver, consulta a **API do Gemini** com marca, modelo e ano para gerar um texto
+de venda. O prompt foi escrito para devolver um parágrafo corrido — sem emojis,
+hashtags ou tópicos — em cerca de 250 caracteres, cabendo direto no cadastro.
+
+**2. Inventário com histórico, não só com o número atual.**
+A cada cadastro ou exclusão, um `post_save`/`post_delete` recalcula o total de
+carros e o **valor patrimonial acumulado** (agregação `Sum` feita no banco) e grava
+um novo registro em `CarInventory`. Como cada movimentação gera uma linha datada,
+o histórico fica disponível para acompanhar a evolução do estoque.
+
+**3. CRUD completo com fotos.**
+Listagem com busca e paginação, cadastro com upload de imagem (Pillow), edição e
+exclusão — com a marca associada por chave estrangeira protegida (`on_delete=PROTECT`),
+evitando que um carro fique sem marca.
 
 ---
 
-## 📂 Estrutura do Projeto
+## 🔄 Fluxo automático (Django Signals)
+
+```text
+Car.pre_save    →  sem bio preenchida, gera a descrição com a API do Gemini
+Car.post_save   →  recalcula o inventário e grava um novo snapshot
+Car.post_delete →  recalcula o inventário e grava um novo snapshot
+```
+
+---
+
+## 🗂️ Models
+
+| Model | Campos principais |
+|---|---|
+| `Brand` | nome da marca |
+| `Car` | modelo, marca (FK protegida), ano de fabricação, ano do modelo, placa, valor, foto e descrição (`bio`) |
+| `CarInventory` | quantidade de carros, valor total e data do registro |
+
+---
+
+## 📁 Estrutura
 
 ```text
 carros/
-├── accounts/          # Autenticação de usuários, login e registro
-├── app/               # Configurações globais (settings, urls, wsgi/asgi)
-├── cars/              # CRUD de veículos, marcas, formulários, templates e signals
-├── media/             # Uploads de fotos de veículos
-├── openai_api/        # Cliente de integração com a API da OpenAI
-├── db.sqlite3         # Banco de dados local
-├── manage.py          # Utilitário de linha de comando do Django
-└── requirements.txt   # Dependências do projeto
+├── app/            # configuração (settings, urls, wsgi/asgi)
+├── accounts/       # cadastro, login e autenticação
+├── cars/           # CRUD de veículos e marcas, templates e signals
+├── gemini_api/     # cliente de integração com a API do Gemini
+├── media/          # fotos enviadas dos veículos
+└── manage.py
+```
+
+---
+
+## 🚀 Como rodar
+
+```bash
+git clone https://github.com/marcusvgcruz/carros.git
+cd carros
+
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .\.venv\Scripts\Activate.ps1
+
+pip install -r requirements.txt
+
+# chave da API do Gemini (usada na geração automática das descrições)
+echo "GEMINI_API_KEY=sua_chave_aqui" > .env
+
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+A aplicação sobe em `http://127.0.0.1:8000/`.
+
+---
+
+## 📄 Autor
+
+**Marcus Cruz** — [GitHub](https://github.com/marcusvgcruz) · [LinkedIn](https://www.linkedin.com/in/marcusvgcruz)
